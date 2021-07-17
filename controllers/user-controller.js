@@ -11,7 +11,7 @@ const UserController = {
     )
       .then((results) => {
         if (!results) {
-          res.status(400).json({ message: "no user found" });
+          res.status(400).json({ message: "No friend found😓" });
           return;
         }
         res.json(results);
@@ -20,25 +20,19 @@ const UserController = {
   },
   // DELETE to remove a friend from a user's friend list
   deleteFriend({ params }, res) {
-    User.findOneAndDelete({ _id: params.userId })
-      .then((deletedFriend) => {
-        if (!deletedFriend) {
-          return res.status(404).json({ message: "No friend with this id!" });
-        }
-        return User.findOneAndUpdate(
-          { _id: params.userId },
-          { $pull: { comments: params.userId } },
-          { new: true }
-        );
-      })
-      .then((dbUserData) => {
-        if (!dbUserData) {
-          res.status(404).json({ message: "No friend found with this id!" });
+    User.findOneAndUpdate(
+      { _id: params.userId },
+      { $pull: { friends: params.friendId } },
+      { new: true }
+    )
+      .then((results) => {
+        if (!results) {
+          res.status(400).json({ message: "No friend found😓" });
           return;
         }
-        res.json(dbUserData);
+        res.json(results);
       })
-      .catch((err) => res.json(err));
+      .catch((err) => res.status(400).json(err));
   },
   // GET all users
   getAllUsers(req, res) {
@@ -88,7 +82,7 @@ const UserController = {
     })
       .then((dbUserData) => {
         if (!dbUserData) {
-          res.status(404).json({ message: "No user found with this id!" });
+          res.status(404).json({ message: "No user found with this id!😓" });
           return;
         }
         res.json(dbUserData);
