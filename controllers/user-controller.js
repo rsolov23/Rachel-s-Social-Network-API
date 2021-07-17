@@ -4,27 +4,19 @@ const UserController = {
   //     /api/users/:userId/friends/:friendId
   // POST to add a new friend to a user's friend list
   addFriend({ params }, res) {
-    User.findOne({ _id: params.friendId })
-      .then((dbUserData) => {
-        console.log(dbUserData);
-        if (!dbUserData) {
-          res.status(404).json({ message: "No user found with this id" });
+    User.findOneAndUpdate(
+      { _id: params.userId },
+      { $push: { friends: params.friendId } },
+      { new: true }
+    )
+      .then((results) => {
+        if (!results) {
+          res.status(400).json({ message: "no user found" });
           return;
         }
-        return User.findOneAndUpdate(
-          { _id: params.Id },
-          { $addToSet: { friends: params.friendId } },
-          { new: true }
-        );
+        res.json(results);
       })
-      .then((dbUserData) => {
-        if (!dbUserData) {
-          res.status(404).json({ message: "No user found with this id2" });
-          return;
-        }
-        res.json(dbUserData);
-      })
-      .catch((err) => res.json(err));
+      .catch((err) => res.status(400).json(err));
   },
   // DELETE to remove a friend from a user's friend list
   deleteFriend({ params }, res) {
