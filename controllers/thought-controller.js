@@ -12,10 +12,10 @@ const thoughtController = {
   },
   // GET to get a single thought by its _id
   getThoughtById({ params }, res) {
-    Thought.findOne({ _id: params.id })
+    Thought.findOne({ _id: params.thoughtId })
       .then((dbThoughtData) => {
         if (!dbThoughtData) {
-          res.status(404).json({ message: "No thought found with this id!😓" });
+          res.status(404).json({ message: "No thought found with this id!1" });
           return;
         }
         res.json(dbThoughtData);
@@ -25,19 +25,18 @@ const thoughtController = {
       });
   },
   // POST to create a new thought (don't forget to push the created thought's _id to the associated user's thoughts array field)
-  createThought({ body }, res) {
+  createThought({ params, body }, res) {
     Thought.create(body)
       .then(({ _id }) => {
         return User.findOneAndUpdate(
-          { _id: body.userId },
+          { _id: params.userId },
           { $push: { thoughts: _id } },
-          // this receives back the updated user with the new thought included {new: true}
           { new: true }
         );
       })
       .then((dbThoughtData) => {
         if (!dbThoughtData) {
-          res.status(404).json({ message: "No user found with this id!😓" });
+          res.status(400).json({ message: "No thought found with this id!2" });
           return;
         }
         res.json(dbThoughtData);
@@ -46,10 +45,10 @@ const thoughtController = {
   },
   // PUT to update a thought by its _id
   updateThought({ params, body }, res) {
-    Thought.findOneAndUpdate({ _id: params.id }, body, { new: true })
+    Thought.findOneAndUpdate({ _id: params.thoughtId }, body, { new: true })
       .then((dbThoughtData) => {
         if (!dbThoughtData) {
-          res.status(404).json({ message: "No user found with this id!😓" });
+          res.status(404).json({ message: "No user found with this id!3" });
           return;
         }
         res.json(dbThoughtData);
@@ -59,12 +58,12 @@ const thoughtController = {
   // DELETE to remove a thought by its _id
   deleteThought({ params }, res) {
     //this deletes the thought document
-    Thought.findOneAndDelete({ _id: params.id })
+    Thought.findOneAndDelete({ _id: params.thoughtId })
       .then((deletedThought) => {
         if (!deletedThought) {
           return res
             .status(404)
-            .json({ message: "No thought with this id!😓" });
+            .json({ message: "No thought found with this id!4" });
         }
         return User.findOneAndUpdate(
           { _id: params.id },
@@ -75,7 +74,7 @@ const thoughtController = {
       })
       .then((dbThoughtData) => {
         if (!dbThoughtData) {
-          res.status(404).json({ message: "No user found with this id!😓" });
+          res.status(404).json({ message: "No thought found with this id!5" });
           return;
         }
         res.json(dbThoughtData);
@@ -93,7 +92,7 @@ const thoughtController = {
     )
       .then((dbThoughtData) => {
         if (!dbThoughtData) {
-          res.status(404).json({ message: "No user found with this id!😓" });
+          res.status(404).json({ message: "No user found with this id!" });
           return;
         }
         res.json(dbThoughtData);
